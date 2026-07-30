@@ -10,7 +10,7 @@ const path = require('path');
 const { rateLimit } = require('express-rate-limit');
 
 const logger = require('./utils/logger');
-const { connectDB } = require('./config/database');
+const { connectDB, query } = require('./config/database');
 const { connectRedis } = require('./config/redis');
 const errorHandler = require('./middleware/errorHandler');
 const { authMiddleware } = require('./middleware/auth');
