@@ -80,6 +80,16 @@ app.get('/health', (req, res) => {
 
 // ── API Routes ────────────────────────────────────────────
 app.use('/api/auth',       require('./routes/auth'));
+app.get('/api/public/school/:code', async (req, res, next) => {
+  try {
+    const { rows } = await query(
+      'SELECT name, logo_url FROM schools WHERE UPPER(code) = UPPER($1) LIMIT 1',
+      [req.params.code]
+    );
+    if (!rows.length) return res.status(404).json({ error: 'École introuvable' });
+    res.json({ name: rows[0].name, logo: rows[0].logo_url });
+  } catch (e) { next(e); }
+});
 app.use('/api/schools',    authMiddleware, require('./routes/schools'));
 app.use('/api/users',      authMiddleware, require('./routes/users'));
 app.use('/api/classes',    authMiddleware, require('./routes/classes'));
