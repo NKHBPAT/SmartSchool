@@ -16,6 +16,7 @@ const errorHandler = require('./middleware/errorHandler');
 const { authMiddleware } = require('./middleware/auth');
 
 const app = express();
+app.set('trust proxy', 1);
 
 // ── Security headers ──────────────────────────────────────
 app.use(helmet({
