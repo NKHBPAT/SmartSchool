@@ -14,23 +14,23 @@ r.get('/', async (req, res, next) => {
 });
 r.post('/', async (req, res, next) => {
   try {
-    const { student_id, type, reason, pass_date, time_out, time_in } = req.body;
+    const { student_id, type, reason, pass_date, time_out, time_in, authorized_name } = req.body;
     if (!student_id || !reason) return res.status(400).json({ error: 'student_id et reason requis' });
     const school_id = req.user.school_id;
     const { rows } = await query(
-      'INSERT INTO passes(student_id,type,reason,pass_date,time_out,time_in,authorized_by,school_id)VALUES($1,$2,$3,$4,$5,$6,$7,$8)RETURNING*',
-      [student_id, type||'sortie', reason, pass_date||new Date().toISOString().slice(0,10), time_out, time_in||null, req.user.id, school_id]
+      'INSERT INTO passes(student_id,type,reason,pass_date,time_out,time_in,authorized_by,authorized_name,school_id)VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9)RETURNING*',
+      [student_id, type||'sortie', reason, pass_date||new Date().toISOString().slice(0,10), time_out, time_in||null, req.user.id, authorized_name||null, school_id]
     );
     res.status(201).json(rows[0]);
   } catch (e) { next(e); }
 });
 r.put('/:id', async (req, res, next) => {
   try {
-    const { student_id, type, reason, pass_date, time_out, time_in } = req.body;
+    const { student_id, type, reason, pass_date, time_out, time_in, authorized_name } = req.body;
     if (!student_id || !reason) return res.status(400).json({ error: 'student_id et reason requis' });
     const { rows } = await query(
-      'UPDATE passes SET student_id=$1,type=$2,reason=$3,pass_date=$4,time_out=$5,time_in=$6 WHERE id=$7 RETURNING*',
-      [student_id, type||'sortie', reason, pass_date||new Date().toISOString().slice(0,10), time_out, time_in||null, req.params.id]
+      'UPDATE passes SET student_id=$1,type=$2,reason=$3,pass_date=$4,time_out=$5,time_in=$6,authorized_name=$7 WHERE id=$8 RETURNING*',
+      [student_id, type||'sortie', reason, pass_date||new Date().toISOString().slice(0,10), time_out, time_in||null, authorized_name||null, req.params.id]
     );
     if (!rows.length) return res.status(404).json({ error: 'Autorisation introuvable' });
     res.json(rows[0]);
